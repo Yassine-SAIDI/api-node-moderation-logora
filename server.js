@@ -1,51 +1,32 @@
-const express = require('express');
-const axios = require('axios');
-const bodyParser = require('body-parser');
+const request = require('supertest');
+const app = require('../server'); // Import de l'app Express pour les tests
 
-const app = express();
-const port = 3000;
-
-// Middleware pour parser le corps des requêtes en JSON
-app.use(bodyParser.json());
-
-// Route GET /api/moderation/predict
-app.get('/api/moderation/predict', async (req, res) => {
-    try {
-        const { text, language } = req.query;
-        const response = await axios.get('https://moderation.logora.fr/predict', {
-            params: {
-                text: text,
-                language: language || 'fr-FR'
-            }
-        });
-       
-        res.json({ prediction: response.data.prediction ? response.data.prediction["0"] : undefined });
-    } catch (error) {
-        console.error(error.response ? error.response.data : error.message);
-        res.status(error.response ? error.response.status : 500).send("Error calling the moderation API");
-    }
+// Groupe de tests pour l'endpoint /api/moderation/predict
+describe('GET /api/moderation/predict', () => {
+    // Teste si l'endpoint répond avec un JSON contenant une prédiction
+    it('responds with json containing a prediction', async () => {
+        // Envoie une requête GET à l'endpoint avec des paramètres de requête spécifiés
+        const response = await request(app)
+            .get('/api/moderation/predict')
+            .query({ text: 'example text', language: 'fr-FR' }) // Utilisation de .query pour ajouter des paramètres GET à la requête
+            .expect('Content-Type', /json/) // S'attend à ce que le Content-Type de la réponse soit du JSON
+            .expect(200); // S'attend à ce que le code de statut de la réponse soit 200
+        // Vérifie que le corps de la réponse contient la propriété 'prediction'
+        expect(response.body).toHaveProperty('prediction'); 
+    });
 });
 
-// Route GET /api/moderation/score
-app.get('/api/moderation/score', async (req, res) => {
-    try {
-        const { text, language } = req.query;
-        const response = await axios.get('https://moderation.logora.fr/score', {
-            params: {
-                text: text,
-                language: language || 'fr-FR'
-            }
-        });
-        
-        res.json({ score: response.data.score });
-    } catch (error) {
-        console.error(error.response ? error.response.data : error.message);
-        res.status(error.response ? error.response.status : 500).send("Error calling the moderation API");
-    }
+// Groupe de tests pour l'endpoint /api/moderation/score
+describe('GET /api/moderation/score', () => {
+    // Teste si l'endpoint répond avec un JSON contenant un score
+    it('responds with json containing a score', async () => {
+        // Envoie une requête GET à l'endpoint avec des paramètres de requête spécifiés
+        const response = await request(app)
+            .get('/api/moderation/score')
+            .query({ text: 'example text', language: 'fr-FR' }) // Utilisation de .query pour ajouter des paramètres GET à la requête
+            .expect('Content-Type', /json/) // S'attend à ce que le Content-Type de la réponse soit du JSON
+            .expect(200); // S'attend à ce que le code de statut de la réponse soit 200
+        // Vérifie que le corps de la réponse contient la propriété 'score'
+        expect(response.body).toHaveProperty('score'); 
+    });
 });
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
-
-module.exports = app;
