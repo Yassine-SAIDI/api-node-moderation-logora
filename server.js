@@ -1,32 +1,59 @@
-const request = require('supertest');
-const app = require('../server'); // Import de l'app Express pour les tests
+const express = require('express');
+const axios = require('axios');
+const bodyParser = require('body-parser');
 
-// Groupe de tests pour l'endpoint /api/moderation/predict
-describe('GET /api/moderation/predict', () => {
-    // Teste si l'endpoint répond avec un JSON contenant une prédiction
-    it('responds with json containing a prediction', async () => {
-        // Envoie une requête GET à l'endpoint avec des paramètres de requête spécifiés
-        const response = await request(app)
-            .get('/api/moderation/predict')
-            .query({ text: 'example text', language: 'fr-FR' }) // Utilisation de .query pour ajouter des paramètres GET à la requête
-            .expect('Content-Type', /json/) // S'attend à ce que le Content-Type de la réponse soit du JSON
-            .expect(200); // S'attend à ce que le code de statut de la réponse soit 200
-        // Vérifie que le corps de la réponse contient la propriété 'prediction'
-        expect(response.body).toHaveProperty('prediction'); 
-    });
+const app = express();
+const port = 3000;
+
+// Utilisation de bodyParser pour parser automatiquement les corps de requêtes JSON
+app.use(bodyParser.json());
+
+// Route pour obtenir une prédiction de modération basée sur le texte et la langue
+app.get('/api/moderation/predict', async (req, res) => {
+    try {
+        // Extraction de text et language des paramètres de requête, avec "fr-FR" comme langue par défaut
+        const { text, language } = req.query;
+        // Appel à l'API de modération externe avec axios
+        const response = await axios.get('https://moderation.logora.fr/predict', {
+            params: {
+                text: text,
+                language: language || 'fr-FR'
+            }
+        });
+        // Réponse avec la prédiction obtenue de l'API externe
+        res.json({ prediction: response.data.prediction ? response.data.prediction["0"] : undefined });
+    } catch (error) {
+        // Gestion des erreurs en cas d'échec de la requête à l'API externe
+        console.error(error.response ? error.response.data : error.message);
+        res.status(error.response ? error.response.status : 500).send("Error calling the moderation API");
+    }
 });
 
-// Groupe de tests pour l'endpoint /api/moderation/score
-describe('GET /api/moderation/score', () => {
-    // Teste si l'endpoint répond avec un JSON contenant un score
-    it('responds with json containing a score', async () => {
-        // Envoie une requête GET à l'endpoint avec des paramètres de requête spécifiés
-        const response = await request(app)
-            .get('/api/moderation/score')
-            .query({ text: 'example text', language: 'fr-FR' }) // Utilisation de .query pour ajouter des paramètres GET à la requête
-            .expect('Content-Type', /json/) // S'attend à ce que le Content-Type de la réponse soit du JSON
-            .expect(200); // S'attend à ce que le code de statut de la réponse soit 200
-        // Vérifie que le corps de la réponse contient la propriété 'score'
-        expect(response.body).toHaveProperty('score'); 
-    });
+// Route pour obtenir un score de qualité du contenu basé sur le texte et la langue
+app.get('/api/moderation/score', async (req, res) => {
+    try {
+        // Extraction de text et language des paramètres de requête, avec "fr-FR" comme langue par défaut
+        const { text, language } = req.query;
+        // Appel à l'API de modération externe pour obtenir un score de qualité
+        const response = await axios.get('https://moderation.logora.fr/score', {
+            params: {
+                text: text,
+                language: language || 'fr-FR'
+            }
+        });
+        // Réponse avec le score de qualité obtenu de l'API externe
+        res.json({ score: response.data.score });
+    } catch (error) {
+        // Gestion des erreurs en cas d'échec de la requête à l'API externe
+        console.error(error.response ? error.response.data : error.message);
+        res.status(error.response ? error.response.status : 500).send("Error calling the moderation API");
+    }
 });
+
+// Démarrage du serveur sur le port spécifié
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
+
+// Exportation de l'application pour permettre les tests
+module.exports = app;
