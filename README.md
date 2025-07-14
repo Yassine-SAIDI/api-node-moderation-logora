@@ -1,28 +1,52 @@
-# Projet de Test Node avec API de Modération Logora
+# 🧪 API - Modération de contenu avec Node.js et Logora
 
-Ce projet est une démonstration d'utilisation de Node.js pour interagir avec l'API de modération Logora, permettant d'évaluer la qualité du contenu textuel et de prédire la nécessité de modération.
+Ce projet est une démonstration d'utilisation de **Node.js** pour interagir avec l'API de modération **Logora**, permettant d'analyser et d'évaluer la qualité de contenus textuels.
 
-## Fonctionnalités
+---
 
-- **Modération Automatique :** Permet de modérer automatiquement les contenus textuels en identifiant les contenus potentiellement inappropriés ou haineux.
-- **Évaluation de la Qualité :** Calcule un score de qualité pour le contenu textuel basé sur divers critères fournis par l'API de modération Logora.
+## 🎯 Fonctionnalités
 
-## Technologies Utilisées
+- **Modération automatique** : identifie les contenus potentiellement inappropriés ou haineux.
+- **Évaluation de la qualité** : retourne un score qualitatif pour un texte donné.
 
-- **Node.js** (runtime)
-- **Express.js** (serveur HTTP)
-- **Axios** (client HTTP)
-- **Jest** (tests automatisés)
+---
 
-## Utilisation
+## 🛠️ Technologies utilisées
 
-Le serveur devrait démarrer et écouter sur le port spécifié dans le fichier server.js, généralement le port 3000.
+- Node.js (runtime)
+- Express.js (serveur HTTP)
+- Axios (requêtes HTTP)
+- Jest (tests unitaires)
 
-### Modération de Contenu
-Envoyez une requête GET à /api/moderation/predict avec les paramètres text (le contenu à modérer) et language (le code de langue du contenu).
+---
 
-### Évaluation de la Qualité
-Envoyez une requête GET à /api/moderation/score avec les mêmes paramètres pour obtenir un score de qualité du contenu.
+## 🚀 Utilisation
 
-## Tests
-Pour exécuter les tests automatisés, utilisez la commande suivante : npm test
+```bash
+npm install
+npm run start
+```
+
+Le serveur démarre sur `http://localhost:3000`
+
+---
+
+### 🔐 Modération de contenu
+
+```http
+GET /api/moderation/predict?text=Votre+texte&language=fr
+```
+
+### 📊 Évaluation de la qualité
+
+```http
+GET /api/moderation/score?text=Votre+texte&language=fr
+```
+
+---
+
+## ✅ Lancer les tests
+
+```bash
+npm test
+```
