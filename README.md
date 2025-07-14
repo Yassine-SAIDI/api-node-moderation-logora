@@ -9,9 +9,10 @@ Ce projet est une démonstration d'utilisation de Node.js pour interagir avec l'
 
 ## Technologies Utilisées
 
-- Node.js
-- Express.js pour le serveur HTTP
-- Axios pour les requêtes HTTP à l'API de modération Logora
+- **Node.js** (runtime)
+- **Express.js** (serveur HTTP)
+- **Axios** (client HTTP)
+- **Jest** (tests automatisés)
 
 ## Utilisation
 
